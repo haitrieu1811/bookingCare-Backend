@@ -1,5 +1,5 @@
 import express from "express";
-import homeController from '../controllers/homeController';
+import homeController from "../controllers/homeController";
 
 let router = express.Router();
 
@@ -8,10 +8,10 @@ let initWebRoutes = (app) => {
     router.get("/about", homeController.getAboutPage);
 
     router.get("/hoidanit", (req, res) => {
-        return res.send('Hello world with HoiDanIT');
-    })
+        return res.send("Hello world with HoiDanIT");
+    });
 
-    return app.use("/", router)
-}
+    return app.use("/", router);
+};
 
 module.exports = initWebRoutes;
