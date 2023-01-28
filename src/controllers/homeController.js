@@ -19,14 +19,38 @@ const getCRUD = (req, res) => {
 };
 
 const postCRUD = async (req, res) => {
-    const message = await CRUDService.createNewUser(req.body);
-    console.log(message);
-    return res.send("Post CRUD from server");
+    const users = await CRUDService.createNewUser(req.body);
+    return res.render("readCrud.ejs", { users });
 };
 
 const displayGetCRUD = async (req, res) => {
     const users = await CRUDService.getAllUsers();
     return res.render("readCrud.ejs", { users });
+};
+
+const updateCRUD = async (req, res) => {
+    const userId = req.query.userId;
+
+    if (userId) {
+        const user = await CRUDService.getUser(userId);
+
+        return res.render("updateCrud.ejs", { user });
+    } else {
+        return res.send("Not found user !!!");
+    }
+};
+
+const postUpdateCRUD = async (req, res) => {
+    const users = await CRUDService.UpdateUser(req.body);
+    return res.render("readCrud.ejs", { users });
+};
+
+const deleteCRUD = async (req, res) => {
+    const userId = req.query.userId;
+    if (userId) {
+        const users = await CRUDService.deleteUser(userId);
+        return res.render("readCrud.ejs", { users });
+    }
 };
 
 module.exports = {
@@ -35,4 +59,7 @@ module.exports = {
     getCRUD,
     postCRUD,
     displayGetCRUD,
+    updateCRUD,
+    postUpdateCRUD,
+    deleteCRUD,
 };

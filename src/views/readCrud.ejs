@@ -27,11 +27,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">Email</th>
-                        <th scope="col">First name</th>
-                        <th scope="col">Last name</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Phone number</th>
+                        <th>Email</th>
+                        <th>First name</th>
+                        <th>Last name</th>
+                        <th>Address</th>
+                        <th>Phone number</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +43,11 @@
                             <td><%=users[i].lastName%></td>
                             <td><%=users[i].address%></td>
                             <td><%=users[i].phoneNumber%></td>
+                            <td>
+                                <a href='/update-crud?userId=<%=users[i].id%>'>Update</a>
+                                <span>|</span>
+                                <a href="/delete-crud?userId=<%=users[i].id%>">Delete</a>
+                            </td>
                         </tr>
                     <% } %>
                 </tbody>

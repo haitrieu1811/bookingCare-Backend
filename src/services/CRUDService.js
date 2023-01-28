@@ -26,7 +26,8 @@ const createNewUser = (data) => {
                 // positionId: DataTypes.STRING,
             });
 
-            resolve("Created a new user");
+            const allUsers = db.User.findAll();
+            resolve(allUsers);
         } catch (e) {
             reject(e);
         }
@@ -55,7 +56,64 @@ const getAllUsers = () => {
     });
 };
 
+const getUser = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await db.User.findByPk(userId, { raw: true });
+
+            if (user) resolve(user);
+            else resolve({});
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const UpdateUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await db.User.update(
+                {
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                },
+                {
+                    where: {
+                        id: data.userId,
+                    },
+                }
+            );
+
+            let allUsers = await db.User.findAll();
+            resolve(allUsers);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const deleteUser = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await db.User.destroy({
+                where: {
+                    id: userId,
+                },
+            });
+
+            const allUsers = db.User.findAll();
+            resolve(allUsers);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 module.exports = {
     createNewUser,
     getAllUsers,
+    getUser,
+    UpdateUser,
+    deleteUser,
 };
