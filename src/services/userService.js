@@ -20,23 +20,20 @@ const handleUserLogin = (email, password) => {
 
                 if (user) {
                     // Compare password
-                    const check = await bcrypt.compareSync(
-                        password,
-                        user.password
-                    );
+                    const check = bcrypt.compareSync(password, user.password);
 
                     if (check) {
                         userData.errCode = 0;
-                        userData.errMessage = "OK";
+                        userData.errMessage = null;
 
                         delete user.password;
                         userData.user = user;
                     } else {
-                        userData.errCode = 0;
+                        userData.errCode = 2;
                         userData.errMessage = "Wrong password";
                     }
                 } else {
-                    userData.errCode = 2;
+                    userData.errCode = 3;
                     userData.errMessage = `User not found`;
                 }
             } else {
@@ -77,6 +74,39 @@ const compareUserPassword = () => {
     });
 };
 
+const getAllUsers = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let users = null;
+
+            // Lấy toàn bộ danh sách người dùng
+            if (id === "ALL") {
+                users = await db.User.findAll({
+                    raw: true,
+                    attributes: {
+                        exclude: ["password"],
+                    },
+                });
+            }
+
+            // Lấy một người dùng
+            if (id && id !== "ALL") {
+                users = await db.User.findOne({
+                    where: { id: id },
+                    attributes: {
+                        exclude: ["password"],
+                    },
+                });
+            }
+
+            resolve(users);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 module.exports = {
     handleUserLogin,
+    getAllUsers,
 };

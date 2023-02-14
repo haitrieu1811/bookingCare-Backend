@@ -4,14 +4,14 @@ const handleLogin = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const userData = await userService.handleUserLogin(email, password);
-
     if (!email || !password) {
         return res.status(500).json({
             errCode: 1,
-            message: "Missing inputs parameter",
+            errMessage: "Missing inputs parameter",
         });
     }
+
+    const userData = await userService.handleUserLogin(email, password);
 
     return res.status(200).json({
         errCode: userData.errCode,
@@ -20,6 +20,28 @@ const handleLogin = async (req, res) => {
     });
 };
 
+const handleGetAllUsers = async (req, res) => {
+    const id = req.body.id; // All, Single
+
+    // Không truyền id
+    if (!id) {
+        return res.status(500).json({
+            errCode: 1,
+            errMessage: "Missing required parameters",
+            users: [],
+        });
+    }
+
+    const users = await userService.getAllUsers(id);
+
+    return res.status(200).json({
+        errCode: 0,
+        errMessage: "OK",
+        users: users ? users : [],
+    });
+};
+
 module.exports = {
     handleLogin,
+    handleGetAllUsers,
 };
