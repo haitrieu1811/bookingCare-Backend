@@ -21,7 +21,9 @@ const handleLogin = async (req, res) => {
 };
 
 const handleGetAllUsers = async (req, res) => {
-    const id = req.body.id; // All, Single
+    const id = req.query.id; // All, Single
+
+    console.log(req.query);
 
     // Không truyền id
     if (!id) {
