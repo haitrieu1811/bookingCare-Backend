@@ -43,7 +43,49 @@ const handleGetAllUsers = async (req, res) => {
     });
 };
 
+const handleCreateNewUser = async (req, res) => {
+    const data = req.body;
+
+    const response = await userService.createNewUser(data);
+
+    return res.status(200).json(response);
+};
+
+const handleEditUser = async (req, res) => {
+    const data = req.body;
+    const userId = req.body.userId;
+
+    if (!userId) {
+        return res.status(500).json({
+            errCode: 1,
+            message: "Missing required parameters !",
+        });
+    }
+
+    const response = await userService.editUser(data);
+
+    return res.status(200).json(response);
+};
+
+const handleDeleteUser = async (req, res) => {
+    const userId = req.body.userId;
+
+    if (!userId) {
+        return res.status(500).json({
+            errCode: 1,
+            message: "Missing required parameters !",
+        });
+    }
+
+    const response = await userService.deleteUser(userId);
+
+    return res.status(200).json(response);
+};
+
 module.exports = {
     handleLogin,
     handleGetAllUsers,
+    handleCreateNewUser,
+    handleEditUser,
+    handleDeleteUser,
 };

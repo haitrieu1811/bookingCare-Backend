@@ -1,6 +1,19 @@
 import bcrypt from "bcryptjs";
 import db from "../models/index";
 
+const salt = bcrypt.genSaltSync(10);
+
+const hashUserPassword = (password) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const hashPassword = bcrypt.hashSync(password, salt);
+            resolve(hashPassword);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 const handleUserLogin = (email, password) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -65,15 +78,6 @@ const checkUserEmail = (userEmail) => {
     });
 };
 
-const compareUserPassword = () => {
-    return new Promise((resolve, reject) => {
-        try {
-        } catch (e) {
-            reject(e);
-        }
-    });
-};
-
 const getAllUsers = async (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -106,7 +110,123 @@ const getAllUsers = async (id) => {
     });
 };
 
+const createNewUser = async (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkEmailExist = await checkUserEmail(data.email);
+
+            if (checkEmailExist) {
+                resolve({
+                    errCode: 1,
+                    message:
+                        "Your email is already in used, please try another email !",
+                });
+            }
+
+            const hashPasswordFromBcrypt = await hashUserPassword(
+                data.password
+            );
+
+            await db.User.create({
+                email: data.email,
+                password: hashPasswordFromBcrypt,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                address: data.address,
+                phoneNumber: data.phoneNumber,
+                gender: data.gender === "1" ? true : false,
+                // image: DataTypes.STRING,
+                roleId: data.roleId,
+                // positionId: DataTypes.STRING,
+            });
+
+            resolve({
+                errCode: 0,
+                message: "OK",
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const editUser = async (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    id: data.userId,
+                },
+            });
+
+            // Kiểm tra có tồn tại người dùng hay không
+            if (!user) {
+                resolve({
+                    errCode: 1,
+                    message: `User isn't exist`,
+                });
+            }
+
+            // Cập nhật thông tin người dùng khi người dùng tồn tại
+            await db.User.update(
+                {
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                },
+                {
+                    where: {
+                        id: data.userId,
+                    },
+                }
+            );
+
+            resolve({
+                errCode: 0,
+                message: "Update user info success",
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const deleteUser = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    id: userId,
+                },
+            });
+
+            if (!user) {
+                resolve({
+                    errCode: 1,
+                    message: `The user isn't exist`,
+                });
+            }
+
+            await db.User.destroy({
+                where: {
+                    id: userId,
+                },
+            });
+
+            resolve({
+                errCode: 0,
+                message: "The user is deleted",
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 module.exports = {
     handleUserLogin,
     getAllUsers,
+    createNewUser,
+    editUser,
+    deleteUser,
 };

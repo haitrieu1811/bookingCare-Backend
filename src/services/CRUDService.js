@@ -35,9 +35,9 @@ const createNewUser = (data) => {
 };
 
 const hashUserPassword = (password) => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         try {
-            const hashPassword = await bcrypt.hashSync(password, salt);
+            const hashPassword = bcrypt.hashSync(password, salt);
             resolve(hashPassword);
         } catch (e) {
             reject(e);
@@ -86,6 +86,7 @@ const UpdateUser = (data) => {
             );
 
             let allUsers = await db.User.findAll();
+
             resolve(allUsers);
         } catch (e) {
             reject(e);
@@ -103,6 +104,7 @@ const deleteUser = (userId) => {
             });
 
             const allUsers = db.User.findAll();
+
             resolve(allUsers);
         } catch (e) {
             reject(e);
