@@ -121,29 +121,29 @@ const createNewUser = async (data) => {
                     message:
                         "Your email is already in used, please try another email !",
                 });
+            } else {
+                const hashPasswordFromBcrypt = await hashUserPassword(
+                    data.password
+                );
+
+                await db.User.create({
+                    email: data.email,
+                    password: hashPasswordFromBcrypt,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                    // phoneNumber: data.phoneNumber,
+                    // gender: data.gender === "1" ? true : false,
+                    // image: DataTypes.STRING,
+                    // roleId: data.roleId,
+                    // positionId: DataTypes.STRING,
+                });
+
+                resolve({
+                    errCode: 0,
+                    message: "OK",
+                });
             }
-
-            const hashPasswordFromBcrypt = await hashUserPassword(
-                data.password
-            );
-
-            await db.User.create({
-                email: data.email,
-                password: hashPasswordFromBcrypt,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                phoneNumber: data.phoneNumber,
-                gender: data.gender === "1" ? true : false,
-                // image: DataTypes.STRING,
-                roleId: data.roleId,
-                // positionId: DataTypes.STRING,
-            });
-
-            resolve({
-                errCode: 0,
-                message: "OK",
-            });
         } catch (e) {
             reject(e);
         }
