@@ -22,6 +22,10 @@ let initWebRoutes = (app) => {
     router.put("/api/edit-user", userController.handleEditUser);
     router.delete("/api/delete-user", userController.handleDeleteUser);
 
+    router.get("/api/allcodes", userController.getAllCodes);
+
+    // End APIs
+
     router.get("/hoidanit", (req, res) => {
         return res.send("Hello world with HoiDanIT");
     });

@@ -23,8 +23,6 @@ const handleLogin = async (req, res) => {
 const handleGetAllUsers = async (req, res) => {
     const id = req.query.id; // All, Single
 
-    console.log(req.query);
-
     // Không truyền id
     if (!id) {
         return res.status(500).json({
@@ -82,10 +80,25 @@ const handleDeleteUser = async (req, res) => {
     return res.status(200).json(response);
 };
 
+const getAllCodes = async (req, res) => {
+    try {
+        const data = await userService.getAllCodes(req.query.type);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.log("Get all code error: ", e);
+
+        return res.status(500).json({
+            errCode: -1,
+            errMessage: "Error from server",
+        });
+    }
+};
+
 module.exports = {
     handleLogin,
     handleGetAllUsers,
     handleCreateNewUser,
     handleEditUser,
     handleDeleteUser,
+    getAllCodes,
 };

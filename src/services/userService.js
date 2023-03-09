@@ -3,8 +3,8 @@ import db from "../models/index";
 
 const salt = bcrypt.genSaltSync(10);
 
-const hashUserPassword = (password) => {
-    return new Promise((resolve, reject) => {
+const hashUserPassword = (password) =>
+    new Promise((resolve, reject) => {
         try {
             const hashPassword = bcrypt.hashSync(password, salt);
             resolve(hashPassword);
@@ -12,10 +12,9 @@ const hashUserPassword = (password) => {
             reject(e);
         }
     });
-};
 
-const handleUserLogin = (email, password) => {
-    return new Promise(async (resolve, reject) => {
+const handleUserLogin = (email, password) =>
+    new Promise(async (resolve, reject) => {
         try {
             const userData = {};
 
@@ -24,7 +23,13 @@ const handleUserLogin = (email, password) => {
             if (isExist) {
                 // User already exist
                 const user = await db.User.findOne({
-                    attributes: ["email", "roleId", "password"],
+                    attributes: [
+                        "email",
+                        "roleId",
+                        "password",
+                        "firstName",
+                        "lastName",
+                    ],
                     where: {
                         email: email,
                     },
@@ -59,10 +64,9 @@ const handleUserLogin = (email, password) => {
             reject(e);
         }
     });
-};
 
-const checkUserEmail = (userEmail) => {
-    return new Promise(async (resolve, reject) => {
+const checkUserEmail = (userEmail) =>
+    new Promise(async (resolve, reject) => {
         try {
             const user = await db.User.findOne({
                 where: {
@@ -76,16 +80,16 @@ const checkUserEmail = (userEmail) => {
             reject(e);
         }
     });
-};
 
-const getAllUsers = async (id) => {
-    return new Promise(async (resolve, reject) => {
+const getAllUsers = async (id) =>
+    new Promise(async (resolve, reject) => {
         try {
             let users = null;
 
             // Lấy toàn bộ danh sách người dùng
             if (id === "ALL") {
                 users = await db.User.findAll({
+                    order: [["id", "DESC"]],
                     raw: true,
                     attributes: {
                         exclude: ["password"],
@@ -108,10 +112,9 @@ const getAllUsers = async (id) => {
             reject(e);
         }
     });
-};
 
-const createNewUser = async (data) => {
-    return new Promise(async (resolve, reject) => {
+const createNewUser = async (data) =>
+    new Promise(async (resolve, reject) => {
         try {
             const checkEmailExist = await checkUserEmail(data.email);
 
@@ -132,11 +135,11 @@ const createNewUser = async (data) => {
                     firstName: data.firstName,
                     lastName: data.lastName,
                     address: data.address,
-                    // phoneNumber: data.phoneNumber,
-                    // gender: data.gender === "1" ? true : false,
-                    // image: DataTypes.STRING,
-                    // roleId: data.roleId,
-                    // positionId: DataTypes.STRING,
+                    phoneNumber: data.phoneNumber,
+                    gender: data.gender,
+                    image: data.previewImage,
+                    roleId: data.role,
+                    positionId: data.position,
                 });
 
                 resolve({
@@ -148,10 +151,9 @@ const createNewUser = async (data) => {
             reject(e);
         }
     });
-};
 
-const editUser = async (data) => {
-    return new Promise(async (resolve, reject) => {
+const editUser = async (data) =>
+    new Promise(async (resolve, reject) => {
         try {
             const user = await db.User.findOne({
                 where: {
@@ -173,6 +175,10 @@ const editUser = async (data) => {
                     firstName: data.firstName,
                     lastName: data.lastName,
                     address: data.address,
+                    phoneNumber: data.phoneNumber,
+                    gender: data.gender,
+                    positionId: data.position,
+                    roleId: data.role,
                 },
                 {
                     where: {
@@ -189,10 +195,9 @@ const editUser = async (data) => {
             reject(e);
         }
     });
-};
 
-const deleteUser = (userId) => {
-    return new Promise(async (resolve, reject) => {
+const deleteUser = (userId) =>
+    new Promise(async (resolve, reject) => {
         try {
             const user = await db.User.findOne({
                 where: {
@@ -205,23 +210,48 @@ const deleteUser = (userId) => {
                     errCode: 1,
                     message: `The user isn't exist`,
                 });
+            } else {
+                await db.User.destroy({
+                    where: {
+                        id: userId,
+                    },
+                });
+
+                resolve({
+                    errCode: 0,
+                    message: "The user is deleted",
+                });
             }
-
-            await db.User.destroy({
-                where: {
-                    id: userId,
-                },
-            });
-
-            resolve({
-                errCode: 0,
-                message: "The user is deleted",
-            });
         } catch (e) {
             reject(e);
         }
     });
-};
+
+const getAllCodes = (type) =>
+    new Promise(async (resolve, reject) => {
+        try {
+            if (!type) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing required parameters",
+                });
+            } else {
+                const data = await db.Allcode.findAll({
+                    where: {
+                        type: type,
+                    },
+                });
+
+                resolve({
+                    errCode: 0,
+                    errMessage: null,
+                    data: data,
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
 
 module.exports = {
     handleUserLogin,
@@ -229,4 +259,5 @@ module.exports = {
     createNewUser,
     editUser,
     deleteUser,
+    getAllCodes,
 };
