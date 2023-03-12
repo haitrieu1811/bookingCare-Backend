@@ -137,7 +137,7 @@ const createNewUser = async (data) =>
                     address: data.address,
                     phoneNumber: data.phoneNumber,
                     gender: data.gender,
-                    image: data.previewImage,
+                    image: data.avatar,
                     roleId: data.role,
                     positionId: data.position,
                 });
@@ -179,6 +179,7 @@ const editUser = async (data) =>
                     gender: data.gender,
                     positionId: data.position,
                     roleId: data.role,
+                    image: data.avatar,
                 },
                 {
                     where: {
